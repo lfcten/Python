@@ -1,0 +1,150 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+@Time     : 2017/8/31 11:31
+@Author   : Danxiyang
+@File     : 11111.py
+@Software : PyCharm
+"""
+import os
+import re
+import logging
+import smtplib, email
+from email.mime import multipart as MIMEMultipart
+from email.mime import text as MIMEText
+from email.mime import image as MIMEImage
+from email.mime import base as MIMEBase
+from email.header import Header
+
+# #
+# def _get_mail_exchanger(domain_name, name_server=""):
+#     # print domain_name
+#     temp_file = os.getenv("temp") + "\\temp.lsh"
+#     os.system("nslookup -qt=mx " + domain_name + " " + name_server + " >" + temp_file + " 2>&1")
+#     f = open(temp_file)
+#     c = f.read()
+#     f.close()
+#     print(c)
+#     os.remove(temp_file)
+#     internet_addresses_map = _get_internet_address(c)
+#     mail_exchangers = re.findall(r"mail\s+exchanger\s*=\s*(\S+)", c)
+#     # mail_exchangers=[internet_addresses_map.get(i,i) for i in mail_exchangers]
+#     mail_exchangerIPs = []
+#     for i in mail_exchangers:
+#         try:
+#             mail_exchangerIPs.append(internet_addresses_map[i])
+#         except:
+#             ip = _getIP(i)
+#             if ip:
+#                 mail_exchangerIPs.append(ip)
+#
+#     if mail_exchangerIPs or name_server:
+#         return mail_exchangerIPs
+#     else:
+#         print("mail_exchangers from 预配置", mail_exchanger.get(domain_name, []))
+#         return g_mail_exchanger.get(domain_name, [])
+#
+#
+# def _get_internet_address(content):
+#     internet_addresses = re.findall(r"(\S+)\s+internet\s+address\s*=\s*(\S+)", content)
+#     internet_addresses_map = {}
+#     for internet_address in internet_addresses:
+#         internet_addresses_map[internet_address[0]] = internet_address[1]
+#     return internet_addresses_map
+#
+#
+# def _getIP(domain_name, name_server=""):
+#     temp_file = os.getenv("temp") + "\\temp.lsh"
+#     os.system("nslookup -qt=a " + domain_name + " " + name_server + " >" + temp_file + " 2>&1")
+#     f = open(temp_file)
+#     c = f.read()
+#     f.close()
+#     os.remove(temp_file)
+#     print(c)
+#     ips = re.findall(domain_name + r"\s*Address\s*:\s*(\S+)", c, re.I)
+#     if ips:
+#         return ips[0][0]
+#     elif name_server == "":
+#         return _getIP(domain_name, "8.8.8.8")
+#     else:
+#         return None
+#
+# _get_mail_exchanger("qq.com")
+
+
+def _send_to_mail_exchanger(mail_exchanger, mail_from, rcpt_to, From="", To="", Subject="", Date=None, Body="",
+                            attachments=None):
+    # 构造MIMEMultipart对象做为根容器
+    main_msg = MIMEMultipart.MIMEMultipart()
+    # 设置根容器属性
+    main_msg['From'] = "xxxxx@rail.com.cn"
+    main_msg['To'] = "xxxx@qq.com"
+    main_msg['Subject'] = "EB VPN Password for zhaoyixuan"
+    if Date:
+        main_msg['Date'] = Date
+    else:
+        main_msg['Date'] = email.utils.formatdate()
+
+    Body = open("test.html", encoding='utf-8').read()
+    #
+    # # 构造MIMEText对象做为邮件显示内容并附加到根容器
+    text_msg = MIMEText.MIMEText(Body, 'plain', 'utf-8')
+    main_msg.attach(text_msg)
+
+    # 构造MIMEBase对象做为文件附件内容并附加到根容器
+    # if attachments:
+    #     for attachment in attachments:
+    #         if not os.path.isfile(attachment):
+    #             continue
+    #         if attachment:
+    #             try:
+    #                 fp = open(attachment, "rb")
+    #                 file_msg = MIMEImage.MIMEImage(fp.read())
+    #                 fp.close()
+    #                 file_msg.add_header("Content-ID",
+    #                                     os.path.basename(attachment).replace(".jpg", "").replace(".png", ""))
+    #                 main_msg.attach(file_msg)
+    #             except:
+    #                 pass
+    #             else:
+    #                 file_msg = MIMEBase.MIMEBase("application", "octet-stream")
+    #         f = open(attachment, 'rb')
+    #         file_msg.set_payload(f.read())
+    #         f.close()
+    #         email.encoders.encode_base64(file_msg)
+    #         file_msg.add_header('Content-Disposition', 'attachment', filename=os.path.basename(attachment))
+    #         main_msg.attach(file_msg)
+
+    data = main_msg.as_string()
+    server = smtplib.SMTP(mail_exchanger, 25)
+    server.set_debuglevel(1)
+    # server.starttls()
+    ret = server.sendmail(mail_from, rcpt_to, data)
+    # for i in range(2):
+    #     try:
+    #         logging.info(mail_exchanger)
+    #         server = smtplib.SMTP(mail_exchanger)
+    #         logging.info(mail_from)
+    #         logging.info(rcpt_to)
+    #         ret = server.sendmail(mail_from, rcpt_to, data)
+    #         print(ret)
+    #         break
+    #     except:
+    #         import traceback
+    #         logging.info(traceback.format_exc())
+    #
+    #         ret = False
+    #         try:
+    #             server.quit()
+    #         except:
+    #             pass
+    try:
+        server.quit()
+    except:
+        pass
+
+
+_send_to_mail_exchanger(mail_exchanger="14.17.41.170", mail_from="xxxxx@rail.com.cn", rcpt_to="xxxxx@qq.com")
+# 59.37.97.124
+# 14.17.41.170
+# 112.90.78.144 企业邮箱
