@@ -1,0 +1,2 @@
+# Python
+something about life
