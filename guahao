@@ -1,0 +1,108 @@
+# -*-coding: gbk -*-
+import requests
+import json
+import time
+from datetime import datetime, timedelta
+d = datetime.now() + timedelta(days=7)
+
+
+# 请求入口
+url = 'http://www.bjguahao.gov.cn/quicklogin.htm'
+
+# 测试账号，密码
+mobileNo = "xxxxx"
+password = "xxxx"
+mapper = {'1': "上午", '2': "下午"}
+dutyDate = ['1', '2']
+codeIndex = 0
+
+# 用户登陆
+formData = {
+    "mobileNo": mobileNo,
+    "password": password,
+    'yzm': "",
+    "isAjax": 'true'
+}
+headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0",
+           "Referer": "http://www.bjguahao.gov.cn/index.htm"}
+req = requests.Session()
+req.post(url, data=formData)
+
+# 判断是否登录成功
+response = req.post("http://www.bjguahao.gov.cn/islogin.htm")
+response = json.loads(response.text)
+print("___" * 5)
+if response['code'] == '200':
+    print("username:", response['username'])
+    print("userid:", response['userid'])
+    print("登陆成功")
+else:
+    print("sorry,登陆失败")
+
+print("已选择：%s" % "北京大学第三医院三级甲等")
+print("___" * 5)
+print("已选择：%s" % "骨科门诊")
+print("___" * 5)
+
+# 挂号查询
+registerUrl = 'http://www.bjguahao.gov.cn/dpt/partduty.htm'
+doctorId = ''
+dutySourceId = ''
+print('开始查询...')
+while 1:
+    flag = 0
+    registerDict = {
+        'hospitalId': "142",
+        'departmentId': "200039524",
+        'dutyCode': dutyDate[codeIndex],
+        'dutyDate': str(d.date()),
+        'isAjax': 'true'
+    }
+    res = req.post(registerUrl, data=registerDict)
+    registerData = json.loads(res.text)
+    msg = registerData['data']
+    print('正在搜索余号信息，目标日期：\t%s %s' % (d.date(), mapper.get(dutyDate[codeIndex])))
+    print("****" * 5)
+    if len(msg) == 0:
+        print('尚未放票')
+        time.sleep(0.5)
+        continue
+    for doctorInfo in msg:
+        if doctorInfo['remainAvailableNumber'] > 0:
+            print('号余量:\t%s\n' % doctorInfo['remainAvailableNumber'])
+            doctorId = str(doctorInfo['doctorId'])
+            dutySourceId = str(doctorInfo['dutySourceId'])
+            flag = 1
+            print("已选择：%s %s" % (d.date(), mapper.get(dutyDate[codeIndex])))
+            # 预约
+            response = req.get("http://www.bjguahao.gov.cn/order/confirm/%s-%s-%s-%s.htm" % ('142', '200039524', doctorId, dutySourceId), headers=headers)
+            # 发送手机验证码
+            response = req.post("http://www.bjguahao.gov.cn/v/sendorder.htm", data='', headers=headers)
+            print(response.text)
+            smsVerifyCode = input("短信验证码：")
+            print(smsVerifyCode)
+            #
+            # 完成预约
+            formData = {
+                'dutySourceId': dutySourceId,
+                'hospitalId': '142',
+                'departmentId': '200039524',
+                'doctorId': doctorId,
+                'patientId': '228763174',
+                'reimbursementType': '1',  # 报销类型 默认-1 医疗保险：1  商业保险：2  公费医疗：3 新农合：4 异地医保：5  红本医疗：6 工伤：7 ....
+                'hospitalCardId': '',  # 就诊卡
+                'medicareCardId': '',  # 医保卡
+                'smsVerifyCode': smsVerifyCode,   # 手机验证码 必填
+                'isAjax': 'true'
+            }
+
+            response = req.post("http://www.bjguahao.gov.cn/order/confirm.htm", data=formData, headers=headers)
+            print(response.text)
+            break
+    if flag == 1:
+        break
+    else:
+        codeIndex += 1
+        if codeIndex == 2:
+            print('没号了....')
+            break
