@@ -16,7 +16,7 @@ from email.mime import image as MIMEImage
 from email.mime import base as MIMEBase
 from email.header import Header
 
-# #
+
 # def _get_mail_exchanger(domain_name, name_server=""):
 #     # print domain_name
 #     temp_file = os.getenv("temp") + "\\temp.lsh"
@@ -77,37 +77,38 @@ def _send_to_mail_exchanger(mail_exchanger, mail_from, rcpt_to, From="", To="", 
     # 构造MIMEMultipart对象做为根容器
     main_msg = MIMEMultipart.MIMEMultipart()
     # 设置根容器属性
-    main_msg['From'] = "xxxxx@rail.com.cn"
-    main_msg['To'] = "xxxx@qq.com"
-    main_msg['Subject'] = "EB VPN Password for zhaoyixuan"
+    main_msg['From'] = "lifeicheng@bupt.com.cn"
+    main_msg['To'] = "lifeicheng@ebupt.com"
+    main_msg['Subject'] = "新版智能推荐接口文档(含公共数据)"
     if Date:
         main_msg['Date'] = Date
     else:
         main_msg['Date'] = email.utils.formatdate()
 
-    Body = open("test.html", encoding='utf-8').read()
+    # Body = open("test.html", encoding='utf-8').read()
     #
     # # 构造MIMEText对象做为邮件显示内容并附加到根容器
-    text_msg = MIMEText.MIMEText(Body, 'plain', 'utf-8')
-    main_msg.attach(text_msg)
+    # text_msg = MIMEText.MIMEText(Body, 'plain', 'utf-8')
+    # main_msg.attach(text_msg)
+    attachments = ['E:/buptdx\doc/05-工程流程\仓库接口/test.xlsx']
 
     # 构造MIMEBase对象做为文件附件内容并附加到根容器
     # if attachments:
     #     for attachment in attachments:
     #         if not os.path.isfile(attachment):
     #             continue
-    #         if attachment:
-    #             try:
-    #                 fp = open(attachment, "rb")
-    #                 file_msg = MIMEImage.MIMEImage(fp.read())
-    #                 fp.close()
-    #                 file_msg.add_header("Content-ID",
-    #                                     os.path.basename(attachment).replace(".jpg", "").replace(".png", ""))
-    #                 main_msg.attach(file_msg)
-    #             except:
-    #                 pass
-    #             else:
-    #                 file_msg = MIMEBase.MIMEBase("application", "octet-stream")
+    #         # if attachment:
+    #         #     try:
+    #         #         fp = open(attachment, "rb")
+    #         #         file_msg = MIMEImage.MIMEImage(fp.read())
+    #         #         fp.close()
+    #         #         file_msg.add_header("Content-ID",
+    #         #                             os.path.basename(attachment).replace(".jpg", "").replace(".png", ""))
+    #         #         main_msg.attach(file_msg)
+    #         #     except:
+    #         #         pass
+    #         #     else:
+    #         file_msg = MIMEBase.MIMEBase("application", "octet-stream")
     #         f = open(attachment, 'rb')
     #         file_msg.set_payload(f.read())
     #         f.close()
@@ -144,7 +145,7 @@ def _send_to_mail_exchanger(mail_exchanger, mail_from, rcpt_to, From="", To="", 
         pass
 
 
-_send_to_mail_exchanger(mail_exchanger="14.17.41.170", mail_from="xxxxx@rail.com.cn", rcpt_to="xxxxx@qq.com")
+_send_to_mail_exchanger(mail_exchanger="112.90.78.144", mail_from="lifeicheng@bupt.com.cn", rcpt_to="lifeicheng@ebupt.com")
 # 59.37.97.124
 # 14.17.41.170
 # 112.90.78.144 企业邮箱

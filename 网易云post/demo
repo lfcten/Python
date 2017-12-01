@@ -30,7 +30,9 @@ def aesEncrypt(text, secKey):
 def rsaEncrypt(text, pubKey, modulus):
     reverse_text = text[::-1]
     pubKey = RSA.construct([int(modulus, 16), int(pubKey, 16)])
+    print("pubKey.encrypt(int(binascii.hexlify(reverse_text.encode()), 16),None)")
     encrypt_text = pubKey.encrypt(int(binascii.hexlify(reverse_text.encode()), 16),None)[0]
+
     return format(encrypt_text, 'x').zfill(256)
 
 
@@ -76,6 +78,7 @@ text = json.dumps(text)
 secKey = createSecretKey(16)
 encText = aesEncrypt(aesEncrypt(text, nonce), secKey)
 encSecKey = rsaEncrypt(secKey, pubKey, modulus)
+
 
 data = {
     'params': encText,

@@ -54,3 +54,4 @@ def aesEncrypt(text, secKey):
     cipher = encrypt.encrypt(text)
     cipher = base64.b64encode(cipher)
     return cipher
+format()
