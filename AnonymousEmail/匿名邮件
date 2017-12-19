@@ -77,9 +77,9 @@ def _send_to_mail_exchanger(mail_exchanger, mail_from, rcpt_to, From="", To="", 
     # 构造MIMEMultipart对象做为根容器
     main_msg = MIMEMultipart.MIMEMultipart()
     # 设置根容器属性
-    main_msg['From'] = "lifeicheng@bupt.com.cn"
-    main_msg['To'] = "lifeicheng@ebupt.com"
-    main_msg['Subject'] = "新版智能推荐接口文档(含公共数据)"
+    main_msg['From'] = "alive@hbw.com"
+    main_msg['To'] = "664629957@qq.com"
+    main_msg['Subject'] = "(含公共数据)"
     if Date:
         main_msg['Date'] = Date
     else:
@@ -145,7 +145,7 @@ def _send_to_mail_exchanger(mail_exchanger, mail_from, rcpt_to, From="", To="", 
         pass
 
 
-_send_to_mail_exchanger(mail_exchanger="112.90.78.144", mail_from="lifeicheng@bupt.com.cn", rcpt_to="lifeicheng@ebupt.com")
+_send_to_mail_exchanger(mail_exchanger="59.37.97.124", mail_from="alive@hbw.com", rcpt_to="664629957@qq.com")
 # 59.37.97.124
 # 14.17.41.170
 # 112.90.78.144 企业邮箱

@@ -5,7 +5,6 @@ class TreeNode:
         self.right = None
 
 
-
 class Solution:
     def verticalOrder(self, root):
         """
@@ -18,6 +17,33 @@ class Solution:
         self.pos = 0
         self.helper(root)
         return self.res
+
+    """
+
+       def helper(self, node):
+           if node.left:
+               if self.pos == 0:
+                   self.res.insert(self.pos, [node.left.val])
+                   self.pos += 1
+               else:
+                   self.res[self.pos - 1].append(node.left.val)
+
+           if node.right:
+               if self.pos + 1 == len(self.res):
+                   self.res.insert(len(self.res), [node.right.val])
+               else:
+                   self.res[self.pos + 1].append(node.right.val)
+
+           if node.left:
+               self.pos -= 1
+               self.helper(node.left)
+               self.pos += 1
+
+           if node.right:
+               self.pos += 1
+               self.helper(node.right)
+               self.pos -= 1
+    """
 
     def helper(self, node):
         if node.left:
