@@ -1,14 +1,23 @@
 import requests
 import os
 import time
-import random
+import sys
 from lxml.html import etree
 from multiprocessing.dummy import Pool as thread_pool
 
-basePath = os.path.join(os.getcwd(), "Taxonomic Tree")
+if getattr(sys, 'frozen', False):
+    base = sys._MEIPASS
+else:
+    base = os.path.dirname(__file__)
+print(base)
+time.sleep(3)
+basePath = os.path.abspath('.') + "/Taxonomic Tree"
+if not os.path.exists(basePath):
+    os.mkdir(basePath)
+time.sleep(3)
 
 
-def download(url, filename, content_length=''):
+def download(url, filename):
     def get_size(filename):
         if not os.path.exists(filename):
             try:
@@ -41,26 +50,26 @@ def download(url, filename, content_length=''):
                     local_file.write(chunk)
                     local_file.flush()
 
-        download(url, filename, content_length)
+        download(url, filename)
 
     except Exception as e:
         print(e)
-        download(url, filename, content_length)
+        download(url, filename)
 
 
 def link_generate():
-    tree = etree.HTML(open("index.html", encoding="utf-8").read())
-    for layer1 in tree.xpath('//ul[@class="orders clearfix"]/li')[-1:]:
+    tree = etree.HTML(open(base + "/html/index.html", encoding="utf-8").read())
+    tp = thread_pool(20)
+    for layer1 in tree.xpath('//ul[@class="orders clearfix"]/li'):
         layer1_name = layer1.xpath('./span/a[@class="name"]/text()')[0]
         layer1_path = os.path.join(basePath, layer1_name)
         if not os.path.exists(layer1_path):
             os.mkdir(layer1_path)
-        tp = thread_pool(20)
         for layer2 in layer1.xpath('.//li'):
             id = layer2.xpath('./@id')[0]
             layer2_name = layer2.xpath('./span/a[@class="name"]/text()')[0]
             layer2_path = os.path.join(layer1_path, layer2_name)
-            print("--" + layer2_name, id)
+            # print("--" + layer2_name, id)
             if not os.path.exists(layer2_path):
                 os.mkdir(layer2_path)
             url = "https://www.hbw.com/bird_taxonomies/ajax/species/" + id[3:] + "/201985"
@@ -71,7 +80,7 @@ def link_generate():
                     href = layer3.xpath("./span/a/@href")[0]
                     layer3_name = href.split("/")[-1]
                     layer3_path = os.path.join(layer2_path, layer3_name)
-                    print("----" + layer3_name)
+                    # print("----" + layer3_name)
                     href1 = "https://www.hbw.com" + href
 
                     if not os.path.exists(layer3_path):
@@ -115,8 +124,8 @@ def link_generate():
                         print(e)
             except Exception as e:
                 print(e)
-        tp.close()
-        tp.join()
+    tp.close()
+    tp.join()
 
 
 link_generate()

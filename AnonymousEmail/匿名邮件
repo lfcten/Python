@@ -12,7 +12,7 @@ import logging
 import smtplib, email
 from email.mime import multipart as MIMEMultipart
 from email.mime import text as MIMEText
-from email.mime import image as MIMEImage
+from email.mime import image
 from email.mime import base as MIMEBase
 from email.header import Header
 
@@ -77,20 +77,56 @@ def _send_to_mail_exchanger(mail_exchanger, mail_from, rcpt_to, From="", To="", 
     # 构造MIMEMultipart对象做为根容器
     main_msg = MIMEMultipart.MIMEMultipart()
     # 设置根容器属性
-    main_msg['From'] = "alive@hbw.com"
-    main_msg['To'] = "664629957@qq.com"
-    main_msg['Subject'] = "(含公共数据)"
+    main_msg['From'] = mail_from
+    main_msg['To'] = ",".join(rcpt_to)
+    main_msg['Subject'] = "凯哥生日快乐"
     if Date:
         main_msg['Date'] = Date
     else:
         main_msg['Date'] = email.utils.formatdate()
 
-    # Body = open("test.html", encoding='utf-8').read()
+    # fp = open('1.jpg', 'rb')
     #
-    # # 构造MIMEText对象做为邮件显示内容并附加到根容器
-    # text_msg = MIMEText.MIMEText(Body, 'plain', 'utf-8')
-    # main_msg.attach(text_msg)
-    attachments = ['E:/buptdx\doc/05-工程流程\仓库接口/test.xlsx']
+    # file_msg = MIMEBase.MIMEBase("application", "octet-stream")
+    # #         f = open(attachment, 'rb')
+    # file_msg.set_payload(fp.read())
+    # fp.close()
+    # file_msg = email.encoders.encode_base64(file_msg)
+
+    # msgImage = image.MIMEImage(fp.read())
+    # fp.close()
+    # msgImage.add_header('Content-ID', '<meinv_image>')
+    # msgImage = email.encoders.encode_base64(msgImage)
+    # main_msg.attach(msgImage)
+    # main_msg.attach(file_msg)
+    f = open("test.html", encoding='utf-8')
+    text_msg = MIMEText.MIMEText(f.read(), 'html', 'utf-8')
+    f.close()
+    main_msg.attach(text_msg)
+    # f = open('1.jpg', 'rb')
+    # file_msg = MIMEBase.MIMEBase("image", 'jpg', filename="1.jpg")
+    # file_msg.add_header('Content-Disposition', 'attachment', filename='test.png')
+    # file_msg.add_header('Content-ID', '<0>')
+    # file_msg.add_header('X-Attachment-Id', '0')
+    # # 把附件的内容读进来:
+    # file_msg.set_payload(f.read())
+    # # 用Base64编码:
+    # email.encoders.encode_base64(file_msg)
+    # # 添加到MIMEMultipart:
+    # main_msg.attach(file_msg)
+
+    # file_msg.set_payload(f.read())
+    # f.close()
+    # email.encoders.encode_base64(file_msg)
+    # file_msg.add_header('Content-Disposition', 'attachment', filename='1')
+    # main_msg.attach(file_msg)
+    # fp = open('1.jpg', 'rb')
+    # msgImage = MIMEImage.MIMEImage(fp.read())
+    # fp.close()
+    # msgImage.add_header('Content-ID', 'image')
+    # main_msg.attach(msgImage)
+
+    # attachments = ['E:/buptdx\doc/05-工程流程\仓库接口/test.xlsx']
 
     # 构造MIMEBase对象做为文件附件内容并附加到根容器
     # if attachments:
@@ -144,8 +180,8 @@ def _send_to_mail_exchanger(mail_exchanger, mail_from, rcpt_to, From="", To="", 
     except:
         pass
 
-
-_send_to_mail_exchanger(mail_exchanger="59.37.97.124", mail_from="alive@hbw.com", rcpt_to="664629957@qq.com")
+for i in range(20):
+    _send_to_mail_exchanger(mail_exchanger="112.90.78.144", mail_from="zuomeng_%s@byr.com" %i, rcpt_to=["likai_1@ebupt.com"])
 # 59.37.97.124
 # 14.17.41.170
 # 112.90.78.144 企业邮箱
