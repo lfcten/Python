@@ -1,17 +1,19 @@
 # -*-coding: gbk -*-
-import requests
 import json
+import re
 import time
 from datetime import datetime, timedelta
-d = datetime.now() + timedelta(days=7)
 
+import requests
+
+d = datetime.now() + timedelta(days=7)
 
 # 请求入口
 url = 'http://www.bjguahao.gov.cn/quicklogin.htm'
 
 # 测试账号，密码
-mobileNo = "xxxxx"
-password = "xxxx"
+mobileNo = "xxx"
+password = "xx"
 mapper = {'1': "上午", '2': "下午"}
 dutyDate = ['1', '2']
 codeIndex = 0
@@ -35,25 +37,27 @@ print("___" * 5)
 if response['code'] == '200':
     print("username:", response['username'])
     print("userid:", response['userid'])
+    patientid = response['userid']
     print("登陆成功")
 else:
     print("sorry,登陆失败")
 
 print("已选择：%s" % "北京大学第三医院三级甲等")
 print("___" * 5)
-print("已选择：%s" % "骨科门诊")
+print("已选择：%s" % "口腔门诊")
 print("___" * 5)
 
 # 挂号查询
 registerUrl = 'http://www.bjguahao.gov.cn/dpt/partduty.htm'
 doctorId = ''
 dutySourceId = ''
+departmentId = "200039542"
 print('开始查询...')
 while 1:
     flag = 0
     registerDict = {
         'hospitalId': "142",
-        'departmentId': "200039524",
+        'departmentId': departmentId,
         'dutyCode': dutyDate[codeIndex],
         'dutyDate': str(d.date()),
         'isAjax': 'true'
@@ -75,8 +79,10 @@ while 1:
             flag = 1
             print("已选择：%s %s" % (d.date(), mapper.get(dutyDate[codeIndex])))
             # 预约
-            response = req.get("http://www.bjguahao.gov.cn/order/confirm/%s-%s-%s-%s.htm" % ('142', '200039524', doctorId, dutySourceId), headers=headers)
+            response = req.get("http://www.bjguahao.gov.cn/order/confirm/%s-%s-%s-%s.htm" % (
+                '142', departmentId, doctorId, dutySourceId), headers=headers)
             # 发送手机验证码
+            patientid = re.search("<input type=\"radio\".*value=\"(\d{9})\"", response.text).group(1)
             response = req.post("http://www.bjguahao.gov.cn/v/sendorder.htm", data='', headers=headers)
             print(response.text)
             smsVerifyCode = input("短信验证码：")
@@ -86,13 +92,13 @@ while 1:
             formData = {
                 'dutySourceId': dutySourceId,
                 'hospitalId': '142',
-                'departmentId': '200039524',
+                'departmentId': departmentId,
                 'doctorId': doctorId,
-                'patientId': '228763174',
+                'patientId': patientid,
                 'reimbursementType': '1',  # 报销类型 默认-1 医疗保险：1  商业保险：2  公费医疗：3 新农合：4 异地医保：5  红本医疗：6 工伤：7 ....
                 'hospitalCardId': '',  # 就诊卡
                 'medicareCardId': '',  # 医保卡
-                'smsVerifyCode': smsVerifyCode,   # 手机验证码 必填
+                'smsVerifyCode': smsVerifyCode,  # 手机验证码 必填
                 'isAjax': 'true'
             }
 
@@ -105,4 +111,6 @@ while 1:
         codeIndex += 1
         if codeIndex == 2:
             print('没号了....')
+            req.get("http://www.bjguahao.gov.cn/logout.htm")
+            print("已退出登陆")
             break
