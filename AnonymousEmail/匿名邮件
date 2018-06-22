@@ -181,7 +181,7 @@ def _send_to_mail_exchanger(mail_exchanger, mail_from, rcpt_to, From="", To="", 
         pass
 
 for i in range(20):
-    _send_to_mail_exchanger(mail_exchanger="112.90.78.144", mail_from="zuomeng_%s@byr.com" %i, rcpt_to=["likai_1@ebupt.com"])
+    _send_to_mail_exchanger(mail_exchanger="112.90.78.144", mail_from="zu_%s@byr.com" %i, rcpt_to=["likai_1@ebupt.com"])
 # 59.37.97.124
 # 14.17.41.170
 # 112.90.78.144 企业邮箱
