@@ -6,69 +6,69 @@
 @File     : 11111.py
 @Software : PyCharm
 """
+import email
 import os
 import re
-import logging
-import smtplib, email
+import smtplib
 from email.mime import multipart as MIMEMultipart
 from email.mime import text as MIMEText
-from email.mime import image
-from email.mime import base as MIMEBase
-from email.header import Header
 
 
-# def _get_mail_exchanger(domain_name, name_server=""):
-#     # print domain_name
-#     temp_file = os.getenv("temp") + "\\temp.lsh"
-#     os.system("nslookup -qt=mx " + domain_name + " " + name_server + " >" + temp_file + " 2>&1")
-#     f = open(temp_file)
-#     c = f.read()
-#     f.close()
-#     print(c)
-#     os.remove(temp_file)
-#     internet_addresses_map = _get_internet_address(c)
-#     mail_exchangers = re.findall(r"mail\s+exchanger\s*=\s*(\S+)", c)
-#     # mail_exchangers=[internet_addresses_map.get(i,i) for i in mail_exchangers]
-#     mail_exchangerIPs = []
-#     for i in mail_exchangers:
-#         try:
-#             mail_exchangerIPs.append(internet_addresses_map[i])
-#         except:
-#             ip = _getIP(i)
-#             if ip:
-#                 mail_exchangerIPs.append(ip)
-#
-#     if mail_exchangerIPs or name_server:
-#         return mail_exchangerIPs
-#     else:
-#         print("mail_exchangers from 预配置", mail_exchanger.get(domain_name, []))
-#         return g_mail_exchanger.get(domain_name, [])
-#
-#
-# def _get_internet_address(content):
-#     internet_addresses = re.findall(r"(\S+)\s+internet\s+address\s*=\s*(\S+)", content)
-#     internet_addresses_map = {}
-#     for internet_address in internet_addresses:
-#         internet_addresses_map[internet_address[0]] = internet_address[1]
-#     return internet_addresses_map
+def _get_mail_exchanger(domain_name, name_server=""):
+    # print domain_name
+    temp_file = os.getenv("temp") + "\\temp.lsh"
+    os.system("nslookup -qt=mx " + domain_name + " " + name_server + " >" + temp_file + " 2>&1")
+    f = open(temp_file)
+    c = f.read()
+    f.close()
+    print(c)
+    os.remove(temp_file)
+    internet_addresses_map = _get_internet_address(c)
+    mail_exchangers = re.findall(r"mail\s+exchanger\s*=\s*(\S+)", c)
+    mail_exchangers = [internet_addresses_map.get(i, i) for i in mail_exchangers]
+    mail_exchangerIPs = []
+    for i in mail_exchangers:
+        try:
+            mail_exchangerIPs.append(internet_addresses_map[i])
+        except Exception as e:
+            print(e)
+            ip = _get_ip(i)
+            if ip:
+                mail_exchangerIPs.append(ip)
+
+    # if mail_exchangerIPs or name_server:
+    #     return mail_exchangerIPs
+    # else:
+    #     print("mail_exchangers from 预配置", mail_exchangers.get(domain_name, []))
+
+
 #
 #
-# def _getIP(domain_name, name_server=""):
-#     temp_file = os.getenv("temp") + "\\temp.lsh"
-#     os.system("nslookup -qt=a " + domain_name + " " + name_server + " >" + temp_file + " 2>&1")
-#     f = open(temp_file)
-#     c = f.read()
-#     f.close()
-#     os.remove(temp_file)
-#     print(c)
-#     ips = re.findall(domain_name + r"\s*Address\s*:\s*(\S+)", c, re.I)
-#     if ips:
-#         return ips[0][0]
-#     elif name_server == "":
-#         return _getIP(domain_name, "8.8.8.8")
-#     else:
-#         return None
-#
+def _get_internet_address(content):
+    internet_addresses = re.findall(r"(\S+)\s+internet\s+address\s*=\s*(\S+)", content)
+    internet_addresses_map = {}
+    for internet_address in internet_addresses:
+        internet_addresses_map[internet_address[0]] = internet_address[1]
+    return internet_addresses_map
+
+
+def _get_ip(domain_name, name_server=""):
+    temp_file = os.getenv("temp") + "\\temp.lsh"
+    os.system("nslookup -qt=a " + domain_name + " " + name_server + " >" + temp_file + " 2>&1")
+    f = open(temp_file)
+    c = f.read()
+    f.close()
+    os.remove(temp_file)
+    print(c)
+    ips = re.findall(domain_name + r"\s*Address\s*:\s*(\S+)", c, re.I)
+    if ips:
+        return ips[0][0]
+    elif name_server == "":
+        return _get_ip(domain_name, "8.8.8.8")
+    else:
+        return None
+
+
 # _get_mail_exchanger("qq.com")
 
 
@@ -76,33 +76,28 @@ def _send_to_mail_exchanger(mail_exchanger, mail_from, rcpt_to, From="", To="", 
                             attachments=None):
     # 构造MIMEMultipart对象做为根容器
     main_msg = MIMEMultipart.MIMEMultipart()
+
     # 设置根容器属性
     main_msg['From'] = mail_from
     main_msg['To'] = ",".join(rcpt_to)
     main_msg['Subject'] = "凯哥生日快乐"
+
     if Date:
         main_msg['Date'] = Date
     else:
         main_msg['Date'] = email.utils.formatdate()
 
     # fp = open('1.jpg', 'rb')
-    #
     # file_msg = MIMEBase.MIMEBase("application", "octet-stream")
-    # #         f = open(attachment, 'rb')
     # file_msg.set_payload(fp.read())
     # fp.close()
     # file_msg = email.encoders.encode_base64(file_msg)
 
-    # msgImage = image.MIMEImage(fp.read())
-    # fp.close()
-    # msgImage.add_header('Content-ID', '<meinv_image>')
-    # msgImage = email.encoders.encode_base64(msgImage)
-    # main_msg.attach(msgImage)
-    # main_msg.attach(file_msg)
     f = open("test.html", encoding='utf-8')
     text_msg = MIMEText.MIMEText(f.read(), 'html', 'utf-8')
     f.close()
     main_msg.attach(text_msg)
+
     # f = open('1.jpg', 'rb')
     # file_msg = MIMEBase.MIMEBase("image", 'jpg', filename="1.jpg")
     # file_msg.add_header('Content-Disposition', 'attachment', filename='test.png')
@@ -126,7 +121,7 @@ def _send_to_mail_exchanger(mail_exchanger, mail_from, rcpt_to, From="", To="", 
     # msgImage.add_header('Content-ID', 'image')
     # main_msg.attach(msgImage)
 
-    # attachments = ['E:/buptdx\doc/05-工程流程\仓库接口/test.xlsx']
+    # attachments = ['E:test.xlsx']
 
     # 构造MIMEBase对象做为文件附件内容并附加到根容器
     # if attachments:
@@ -143,7 +138,6 @@ def _send_to_mail_exchanger(mail_exchanger, mail_from, rcpt_to, From="", To="", 
     #         #         main_msg.attach(file_msg)
     #         #     except:
     #         #         pass
-    #         #     else:
     #         file_msg = MIMEBase.MIMEBase("application", "octet-stream")
     #         f = open(attachment, 'rb')
     #         file_msg.set_payload(f.read())
@@ -155,8 +149,10 @@ def _send_to_mail_exchanger(mail_exchanger, mail_from, rcpt_to, From="", To="", 
     data = main_msg.as_string()
     server = smtplib.SMTP(mail_exchanger, 25)
     server.set_debuglevel(1)
-    # server.starttls()
-    ret = server.sendmail(mail_from, rcpt_to, data)
+
+    # 启动tls: server.starttls()
+    server.sendmail(mail_from, rcpt_to, data)
+
     # for i in range(2):
     #     try:
     #         logging.info(mail_exchanger)
@@ -175,13 +171,41 @@ def _send_to_mail_exchanger(mail_exchanger, mail_from, rcpt_to, From="", To="", 
     #             server.quit()
     #         except:
     #             pass
+
     try:
         server.quit()
-    except:
+    except Exception as e:
+        print(e)
         pass
 
-for i in range(20):
-    _send_to_mail_exchanger(mail_exchanger="112.90.78.144", mail_from="zuomeng_%s@byr.com" %i, rcpt_to=["likai_1@ebupt.com"])
+
+"""
 # 59.37.97.124
 # 14.17.41.170
+# 103.7.30.40
 # 112.90.78.144 企业邮箱
+
+Server:  UnKnown
+Address:  2001:4898::1050:5050
+
+Non-authoritative answer:
+qq.com  MX preference = 10, mail exchanger = mx3.qq.com
+qq.com  MX preference = 20, mail exchanger = mx2.qq.com
+qq.com  MX preference = 30, mail exchanger = mx1.qq.com
+
+mx3.qq.com      internet address = 103.7.30.40
+mx3.qq.com      AAAA IPv6 address = 2001:df6:f400::2808
+mx2.qq.com      internet address = 184.105.206.82
+mx2.qq.com      internet address = 184.105.206.30
+mx2.qq.com      internet address = 184.105.206.31
+mx2.qq.com      internet address = 184.105.206.32
+mx2.qq.com      internet address = 184.105.206.86
+mx2.qq.com      internet address = 103.7.30.40
+mx2.qq.com      internet address = 184.105.206.85
+mx2.qq.com      AAAA IPv6 address = 2001:df6:f400::2808
+mx1.qq.com      internet address = 103.7.30.40
+mx1.qq.com      AAAA IPv6 address = 2001:df6:f400::2808
+"""
+
+_send_to_mail_exchanger(mail_exchanger="112.90.78.144", mail_from="li@byr.com",
+                        rcpt_to=["zhaoyixuan@ebupt.com"])
