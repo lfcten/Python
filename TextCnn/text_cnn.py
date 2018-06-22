@@ -6,7 +6,8 @@ class TextCNN:
     http://arxiv.org/abs/1408.5882
     """
 
-    def __init__(self, sequence_length, num_classes, vocab_size, embedding_size, filter_sizes, num_filter, l2_reg_lambda=0.0):
+    def __init__(self, sequence_length, num_classes, vocab_size, embedding_size, filter_sizes, num_filter,
+                 l2_reg_lambda=0.0):
         """
 
         :param sequence_length:
@@ -36,7 +37,8 @@ class TextCNN:
                 b = tf.Variable(tf.constant(0.1, shape=[num_filter]), name='b')
                 conv = tf.nn.conv2d(self.embedded_chars_expanded, W, strides=[1, 1, 1, 1], padding='VALID', name='conv')
                 h = tf.nn.relu(tf.nn.bias_add(conv, b), name='relu')
-                pooled = tf.nn.max_pool(h, ksize=[1, sequence_length - filter_size + 1, 1, 1], strides=[1, 1, 1, 1], padding='VALID', name='pool')
+                pooled = tf.nn.max_pool(h, ksize=[1, sequence_length - filter_size + 1, 1, 1], strides=[1, 1, 1, 1],
+                                        padding='VALID', name='pool')
                 pooled_outputs.append(pooled)
 
         num_filter_total = num_filter * len(filter_sizes)
@@ -59,4 +61,3 @@ class TextCNN:
         with tf.name_scope('accuracy'):
             correct_predictions = tf.equal(self.predictions, tf.argmax(self.input_y, 1))
             self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, 'float'), name='accuracy')
-
