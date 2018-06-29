@@ -208,4 +208,4 @@ mx1.qq.com      AAAA IPv6 address = 2001:df6:f400::2808
 """
 
 _send_to_mail_exchanger(mail_exchanger="112.90.78.144", mail_from="li@byr.com",
-                        rcpt_to=["zhaoyixuan@ebupt.com"])
+                        rcpt_to=["zhao@xxx.com"])
